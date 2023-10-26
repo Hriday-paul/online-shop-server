@@ -8,7 +8,7 @@ router.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
 
 
-router.get("/category", getData);
+router.get("/categoryAll/:pageNum", getData);
 
 //get single product
 router.get("/product/:id", getSingleProduct)
@@ -20,7 +20,7 @@ router.post("/postData", postData);
 router.get("/getImage/:id", getPhoto)
 
 //get category wise product
-router.get("/category/:categoryName", getCategoryProduct)
+router.get("/category/:categoryName/:pageNum", getCategoryProduct)
 
 // add to cart
 router.put("/addCart", addToCart)

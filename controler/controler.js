@@ -6,7 +6,8 @@ const path = require("path");
 
 const getData = async (req, res) => {
     try {
-        const datas = await productModel.find({}).select("-image").sort({ createdAt: -1 });
+        const page_num = parseInt(req.params.pageNum);
+        const datas = await productModel.find({}).select("-image").sort({ createdAt: -1 }).skip((page_num-1)*9).limit(9)
         res.send({
             status: true,
             message: "All product get successfully",
@@ -44,9 +45,10 @@ const getSingleProduct = async (req, res) => {
 const getCategoryProduct = async (req, res) => {
     try {
         const categorynm = req.params.categoryName
-        //console.log(categorynm)
+        const page_num = parseInt(req.params.pageNum);
+        console.log(categorynm, page_num)
         const query = { category: categorynm }
-        const datas = await productModel.find(query)
+        const datas = await productModel.find(query).select("-image").sort({ createdAt: -1 }).skip((page_num-1)*9).limit(9)
         res.send({
             status: true,
             message: "All product get successfully",
