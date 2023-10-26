@@ -1,5 +1,5 @@
 const express = require("express");
-const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct } = require("../controler/controler");
+const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct, addToCart, userGetCart, deleteCart } = require("../controler/controler");
 const router = express.Router();
 const path = require("path");
 var bodyParser = require('body-parser')
@@ -22,6 +22,14 @@ router.get("/getImage/:id", getPhoto)
 //get category wise product
 router.get("/category/:categoryName", getCategoryProduct)
 
+// add to cart
+router.put("/addCart", addToCart)
+
+//get user added cart
+router.get("/getCart/:email", userGetCart)
+
+//delete add to cart product
+router.delete("/deleteCart/:id", deleteCart)
 
 
 

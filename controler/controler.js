@@ -1,5 +1,6 @@
 const productModel = require("../model/productModel");
 const demoModel = require("../model/demoModel");
+const userCart = require("../model/userCart");
 const { v4: uuidv4 } = require('uuid');
 const path = require("path");
 
@@ -118,6 +119,64 @@ const getPhoto = async (req, res) => {
     }
 };
 
+//add to cart by email
+const addToCart = async (req, res) => {
+    try {
+        const filter = { id: req.body.id };
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: {
+                id: req.body.id,
+                product_model: req.body.productModel,
+                stock: req.body.stock,
+                price: req.body.price,
+                discount: req.body.discount,
+                email: req.body.email,
+                quantity: req.body.quantity || 1,
+            },
+        };
+        await userCart.updateOne(filter, updateDoc, options);
+        res.send({
+            status: true,
+            message: "Added cart SuccessFully",
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+}
+
+//get user added cart
+const userGetCart = async (req, res) => {
+    try {
+        const email = req.params.email;
+        const query = { email }
+        const carts = await userCart.find(query)
+        res.send({
+            status: true,
+            message: "Cart product get successfully",
+            carts
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+}
+
+//delete add to cart product
+const deleteCart = async(req, res)=>{
+    const id = req.params.id;
+    const query = {id}
+    await userCart.deleteOne(query)
+}
 
 
 module.exports = {
@@ -126,4 +185,7 @@ module.exports = {
     getCategoryProduct,
     postData,
     getPhoto,
+    addToCart,
+    userGetCart,
+    deleteCart,
 }
