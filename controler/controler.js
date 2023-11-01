@@ -1,13 +1,14 @@
 const productModel = require("../model/productModel");
 const demoModel = require("../model/demoModel");
 const userCart = require("../model/userCart");
+const users = require("../model/users")
 const { v4: uuidv4 } = require('uuid');
 const path = require("path");
 
 const getData = async (req, res) => {
     try {
         const page_num = parseInt(req.params.pageNum);
-        const datas = await productModel.find({}).select("-image").sort({ createdAt: -1 }).skip((page_num-1)*9).limit(9)
+        const datas = await productModel.find({}).select("-image").sort({ createdAt: -1 }).skip((page_num - 1) * 9).limit(9)
         res.send({
             status: true,
             message: "All product get successfully",
@@ -46,9 +47,9 @@ const getCategoryProduct = async (req, res) => {
     try {
         const categorynm = req.params.categoryName
         const page_num = parseInt(req.params.pageNum);
-        console.log(categorynm, page_num)
+        
         const query = { category: categorynm }
-        const datas = await productModel.find(query).select("-image").sort({ createdAt: -1 }).skip((page_num-1)*9).limit(9)
+        const datas = await productModel.find(query).select("-image").sort({ createdAt: -1 }).skip((page_num - 1) * 9).limit(9)
         res.send({
             status: true,
             message: "All product get successfully",
@@ -100,9 +101,7 @@ const postData = async (req, res) => {
 
 }
 
-
-
-
+//get photo
 const getPhoto = async (req, res) => {
     try {
         const product = await productModel.findOne({ id: req.params.id }).select("image");
@@ -174,10 +173,113 @@ const userGetCart = async (req, res) => {
 }
 
 //delete add to cart product
-const deleteCart = async(req, res)=>{
+const deleteCart = async (req, res) => {
     const id = req.params.id;
-    const query = {id}
+    const query = { id }
     await userCart.deleteOne(query)
+}
+
+
+//handle User 
+
+//create new user
+const createUser = async (req, res) => {
+    try {
+        const userInfo = {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+            password : req.body.password,
+            profile_pic: " "
+        }
+        const newUser = await users(userInfo)
+        await newUser.save();
+        res.send({
+            status: true,
+            message: "creat user Successfully",
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+}
+
+//get user
+const getuser = async (req, res) => {
+    try {
+        const userQuery = { email: req.query.email }
+        const userData = await users.findOne(userQuery)
+        res.send({
+            status: true,
+            message: "user info get successfully",
+            userData
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+
+}
+
+//updarte user
+const updateUser = async(req,res)=>{
+    try {
+        const userQuery = { email: req.query.email }
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: {
+              name : req.body.name,
+              email : req.body.email,
+              phone : req.body.phone,
+            },
+          };
+       await users.updateOne(userQuery, updateDoc, options);
+        
+        res.send({
+            status: true,
+            message: "update successfully",
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+}
+
+//update password 
+const updateUserPass = async(req,res)=>{
+    try {
+        const userQuery = { email: req.query.email }
+        const updateDoc = {
+            $set: {
+              password : req.body.password
+            },
+          };
+       await users.updateOne(userQuery, updateDoc);
+        res.send({
+            status: true,
+            message: "password update successfully",
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+
 }
 
 
@@ -190,4 +292,8 @@ module.exports = {
     addToCart,
     userGetCart,
     deleteCart,
+    createUser,
+    getuser,
+    updateUser,
+    updateUserPass
 }

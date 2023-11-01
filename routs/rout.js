@@ -1,5 +1,5 @@
 const express = require("express");
-const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct, addToCart, userGetCart, deleteCart } = require("../controler/controler");
+const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct, addToCart, userGetCart, deleteCart, createUser, getuser, updateUser, updateUserPass } = require("../controler/controler");
 const router = express.Router();
 const path = require("path");
 var bodyParser = require('body-parser')
@@ -33,5 +33,18 @@ router.delete("/deleteCart/:id", deleteCart)
 
 
 
+//handle user
+
+//create user
+router.post("/createUser", createUser)
+
+//get user
+router.get("/getuser", getuser)
+
+//update user info 
+router.put("/updateUser", updateUser)
+
+//update user password
+router.put("/updatePassword", updateUserPass)
 
 module.exports = router;
