@@ -24,6 +24,25 @@ const getData = async (req, res) => {
     }
 }
 
+const getAllDataLength = async (req, res) => {
+    try {
+        const length = await productModel.estimatedDocumentCount();
+        res.send({
+            status: true,
+            message: "All product length get successfully",
+            data: length
+        })
+
+    } catch (err) {
+        res.send({
+            status: false,
+            message: "Get product Something wents wrong",
+            error: err
+        })
+    }
+
+}
+
 const getSingleProduct = async (req, res) => {
     try {
         const query = { id: req.params.id }
@@ -47,7 +66,7 @@ const getCategoryProduct = async (req, res) => {
     try {
         const categorynm = req.params.categoryName
         const page_num = parseInt(req.params.pageNum);
-        
+
         const query = { category: categorynm }
         const datas = await productModel.find(query).select("-image").sort({ createdAt: -1 }).skip((page_num - 1) * 9).limit(9)
         res.send({
@@ -60,6 +79,25 @@ const getCategoryProduct = async (req, res) => {
         res.send({
             status: false,
             message: "Get product Something wents wrong",
+            error: err
+        })
+    }
+}
+
+const getCategoryDataLength = async (req, res) => {
+    try {
+        const category = req.params.categoryName;
+        const query = { category }
+        const length = await productModel.find(query).countDocuments();
+        res.send({
+            status: true,
+            message: `${category} product get successfully`,
+            data : length
+        })
+    } catch (err) {
+        res.send({
+            status: false,
+            message: `Get product Something wents wrong`,
             error: err
         })
     }
@@ -189,7 +227,7 @@ const createUser = async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             phone: req.body.phone,
-            password : req.body.password,
+            password: req.body.password,
             profile_pic: " "
         }
         const newUser = await users(userInfo)
@@ -230,19 +268,19 @@ const getuser = async (req, res) => {
 }
 
 //updarte user
-const updateUser = async(req,res)=>{
+const updateUser = async (req, res) => {
     try {
         const userQuery = { email: req.query.email }
         const options = { upsert: true };
         const updateDoc = {
             $set: {
-              name : req.body.name,
-              email : req.body.email,
-              phone : req.body.phone,
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
             },
-          };
-       await users.updateOne(userQuery, updateDoc, options);
-        
+        };
+        await users.updateOne(userQuery, updateDoc, options);
+
         res.send({
             status: true,
             message: "update successfully",
@@ -258,15 +296,15 @@ const updateUser = async(req,res)=>{
 }
 
 //update password 
-const updateUserPass = async(req,res)=>{
+const updateUserPass = async (req, res) => {
     try {
         const userQuery = { email: req.query.email }
         const updateDoc = {
             $set: {
-              password : req.body.password
+                password: req.body.password
             },
-          };
-       await users.updateOne(userQuery, updateDoc);
+        };
+        await users.updateOne(userQuery, updateDoc);
         res.send({
             status: true,
             message: "password update successfully",
@@ -285,8 +323,10 @@ const updateUserPass = async(req,res)=>{
 
 module.exports = {
     getData,
+    getAllDataLength,
     getSingleProduct,
     getCategoryProduct,
+    getCategoryDataLength,
     postData,
     getPhoto,
     addToCart,
