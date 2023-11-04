@@ -2,7 +2,8 @@ const express = require("express");
 const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct, addToCart, userGetCart, deleteCart, createUser, getuser, updateUser, updateUserPass, getAllDataLength, getCategoryDataLength } = require("../controler/controler");
 const router = express.Router();
 const path = require("path");
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const { getallUsers, usersLength, deleteUser } = require("../controler/Admin");
 router.use(bodyParser.json({ limit: '50mb' }));
 router.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
@@ -52,5 +53,21 @@ router.put("/updateUser", updateUser)
 
 //update user password
 router.put("/updatePassword", updateUserPass)
+
+
+//handle admin
+
+//get all users
+router.get("/allUsers", getallUsers)
+
+//get users length
+router.get("/usersLength", usersLength)
+
+//delete user
+router.delete("/deleteUser", deleteUser);
+
+
+
+
 
 module.exports = router;
