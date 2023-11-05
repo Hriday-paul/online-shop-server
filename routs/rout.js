@@ -1,5 +1,5 @@
 const express = require("express");
-const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct, addToCart, userGetCart, deleteCart, createUser, getuser, updateUser, updateUserPass, getAllDataLength, getCategoryDataLength } = require("../controler/controler");
+const { getData, postData, demoControler, getPhoto, getCategoryProduct, getSingleProduct, addToCart, userGetCart, deleteCart, createUser, getuser, updateUser, updateUserPass, getAllDataLength, getCategoryDataLength, deleteProduct, upDateProduct } = require("../controler/controler");
 const router = express.Router();
 const path = require("path");
 var bodyParser = require('body-parser');
@@ -12,11 +12,16 @@ router.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 router.get("/categoryAll/:pageNum", getData);
 
 //get all datas length 
-
 router.get("/allDataLength", getAllDataLength);
 
 //get single product
-router.get("/product/:id", getSingleProduct)
+router.get("/product/:id", getSingleProduct);
+
+//delete product
+router.delete("/deleteProduct", deleteProduct)
+
+//update product
+router.put("/updateProduct", upDateProduct)
 
 //upload.single('imageFile'),
 router.post("/postData", postData);

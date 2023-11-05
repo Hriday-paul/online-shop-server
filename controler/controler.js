@@ -8,7 +8,8 @@ const path = require("path");
 const getData = async (req, res) => {
     try {
         const page_num = parseInt(req.params.pageNum);
-        const datas = await productModel.find({}).select("-image").sort({ createdAt: -1 }).skip((page_num - 1) * 9).limit(9)
+        const limit = req.query.limit;
+        const datas = await productModel.find({}).select("-image").sort({ createdAt: -1 }).skip((page_num - 1) * limit).limit(limit)
         res.send({
             status: true,
             message: "All product get successfully",
@@ -62,6 +63,66 @@ const getSingleProduct = async (req, res) => {
     }
 }
 
+const deleteProduct = async (req, res) => {
+    try {
+        const query = { id: req.query.id }
+        await productModel.deleteOne(query)
+        res.send({
+            status: true,
+            message: "Product delete successfully",
+        })
+    }
+    catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+}
+
+const upDateProduct = async (req, res) => {
+    try {
+        const query = {id : req.query.id};
+        let file = false;
+
+        if (req.query.imageTrue) {
+            file = req.files.imageFile;
+        }
+
+        const updateProductInfo = {
+            product_name: req.body.productName,
+            product_model: req.body.productModel,
+            brand: req.body.brand,
+            stock: req.body.stock,
+            description: req.body.description,
+            price: req.body.price,
+            discount: req.body.discount,
+            category: req.body.categoryName,
+            createdAt: Date.now(),
+        }
+        if (file) {
+            updateProductInfo.image.data = file.data;
+            updateProductInfo.image.contentType = file.mimetype;
+        }
+        const productInfo = await {
+            $set: updateProductInfo
+        }
+        await productModel.updateOne(query, productInfo)
+        res.send({
+            status: true,
+            message: "Product update successfully",
+        })
+    } catch (err) {
+        res.send({
+            status: false,
+            message: err.message,
+            error: err
+        })
+    }
+
+}
+
 const getCategoryProduct = async (req, res) => {
     try {
         const categorynm = req.params.categoryName
@@ -78,7 +139,7 @@ const getCategoryProduct = async (req, res) => {
     catch (err) {
         res.send({
             status: false,
-            message: "Get product Something wents wrong",
+            message: err.message,
             error: err
         })
     }
@@ -92,7 +153,7 @@ const getCategoryDataLength = async (req, res) => {
         res.send({
             status: true,
             message: `${category} product get successfully`,
-            data : length
+            data: length
         })
     } catch (err) {
         res.send({
@@ -228,7 +289,8 @@ const createUser = async (req, res) => {
             email: req.body.email,
             phone: req.body.phone,
             password: req.body.password,
-            profile_pic: " "
+            profile_pic: " ",
+            createdAt: Date.now(),
         }
         const newUser = await users(userInfo)
         await newUser.save();
@@ -317,7 +379,6 @@ const updateUserPass = async (req, res) => {
             error: err
         })
     }
-
 }
 
 
@@ -325,6 +386,8 @@ module.exports = {
     getData,
     getAllDataLength,
     getSingleProduct,
+    deleteProduct,
+    upDateProduct,
     getCategoryProduct,
     getCategoryDataLength,
     postData,

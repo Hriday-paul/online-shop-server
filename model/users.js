@@ -17,8 +17,10 @@ const userSchema = Schema(
         },
         password : {
             type: String,
-            required: true,
         },
+        createdAt : {
+            type: String,
+          },
         profile_pic: {
             data: Buffer,
             contentType: String,

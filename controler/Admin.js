@@ -5,7 +5,6 @@ const getallUsers = async (req, res) => {
     try {
         const currentpage = req.query.currentPage;
         const pageLimit = req.query.pageLimit;
-        console.log(currentpage, pageLimit)
         const userInfo = await users.find({}).sort({ createdAt: -1 }).skip((currentpage - 1) * pageLimit).limit(pageLimit)
         res.send({
             status: true,
